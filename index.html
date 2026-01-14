@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PreBit V17.1</title>
+    <title>PreBit V19 (Flush Fix)</title>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.0.7/countUp.umd.js"></script> 
     <style>
@@ -63,7 +63,7 @@
 
         /* --- HERO --- */
         .hero { 
-            padding: 15px 20px; flex-shrink: 0; 
+            padding: 12px 20px; flex-shrink: 0; 
             display: flex; justify-content: space-between; align-items: flex-end;
             border-bottom: 1px solid var(--glass-border);
         }
@@ -94,7 +94,7 @@
         #chart { width: 100%; height: 100%; position: absolute; top:0; left:0; }
         
         .chart-controls {
-            position: absolute; top: 12px; left: 15px; z-index: 10; display: flex; gap: 8px;
+            position: absolute; top: 10px; left: 15px; z-index: 10; display: flex; gap: 8px;
         }
         .ctrl-group {
             display: flex; background: rgba(10, 10, 10, 0.7); border-radius: 8px; padding: 3px; 
@@ -102,7 +102,7 @@
         }
         .ctrl-btn {
             background: transparent; border: none; color: var(--text-secondary); font-size: 0.7rem;
-            font-weight: 700; padding: 6px 12px; cursor: pointer; border-radius: 6px; transition: all 0.2s;
+            font-weight: 700; padding: 5px 10px; cursor: pointer; border-radius: 6px; transition: all 0.2s;
         }
         .ctrl-btn:hover { color: #fff; }
         .ctrl-btn.active { 
@@ -117,7 +117,7 @@
             backdrop-filter: blur(20px);
             padding: 15px 25px;
             display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; 
-            flex-shrink: 0; min-height: 130px;
+            flex-shrink: 0; min-height: 120px;
             box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
         }
         
@@ -130,20 +130,12 @@
             display: flex; align-items: baseline; gap: 4px;
         }
 
-        .p-sub-row { 
-            display: flex; align-items: center; gap: 6px; margin-bottom: 6px; min-width: 0; 
-            width: 100%; /* Ensure full width usage */
-        }
-        
-        /* --- FIXED TEXT STYLE --- */
+        .p-sub-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; min-width: 0; }
         .p-sub { 
-            /* Responsive Font Sizing: shrinks on small screens, caps at 0.8rem */
-            font-size: clamp(0.6rem, 3.5vw, 0.8rem); 
-            font-weight: 600; 
-            transition: color 0.3s; 
+            font-size: 0.8rem; font-weight: 600; transition: color 0.3s; 
             text-shadow: 0 0 10px rgba(0,0,0,0.5);
-            white-space: nowrap; /* Force one line */
-            letter-spacing: -0.3px; /* Slightly tight to fit more */
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 100%;
         }
         
         .text-bull { color: var(--green); }
@@ -153,7 +145,7 @@
         .info-icon { 
             width: 14px; height: 14px; border: 1px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.6); 
             border-radius: 50%; font-size: 9px; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; font-family: serif; font-style: italic; flex-shrink: 0; 
+            cursor: pointer; font-family: serif; font-style: italic; flex-shrink: 0;
         }
         .conf-text { font-size: 0.7rem; color: var(--text-secondary); font-weight: 500; }
         .conf-val-text { color: #fff; font-weight: 700; }
@@ -196,16 +188,35 @@
         .tab-btn.active { color: var(--text-primary); }
         .tab-btn span { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
 
-        /* --- LIST VIEWS --- */
-        .scroll-content { overflow-y: auto; height: 100%; padding: 20px; }
+        /* --- FIXED LIST VIEWS --- */
+        .scroll-content { 
+            overflow-y: auto; height: 100%; 
+            padding: 10px 15px; /* TIGHTER PADDING TO FIX GAP */
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .scroll-content::-webkit-scrollbar { display: none; }
+
+        /* HISTORY LIST RESET */
+        .hist-list { 
+            padding: 0 !important; margin: 0 !important; 
+            list-style: none; width: 100%; 
+        }
+
         .hist-item { 
-            display: flex; justify-content: space-between; padding: 15px; 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; 
             border-bottom: 1px solid var(--glass-border); background: var(--card-bg);
             margin-bottom: 8px; border-radius: 8px;
+            width: 100%; /* Ensure full width */
         }
-        .hist-date { color: var(--text-secondary); font-size: 0.8rem; font-weight: 500; }
+        
+        /* Explicit Left/Right containers for perfect justification */
+        .hist-left { display: flex; align-items: center; }
+        .hist-right { display: flex; align-items: center; justify-content: flex-end; }
+
+        .hist-date { color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; }
         .hist-price { font-family: var(--font-mono); font-weight: 700; font-size: 0.9rem; color: #fff; }
-        .hist-change { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; margin-left: 8px; font-weight: 600; }
+        .hist-change { font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-weight: 600; }
         .pos { color: var(--green); background: rgba(0, 255, 102, 0.1); }
         .neg { color: var(--magenta); background: rgba(255, 0, 85, 0.1); }
 
@@ -257,7 +268,7 @@
 
     <div id="loader">
         <div class="live-dot" style="width:12px; height:12px; margin-bottom:15px;"></div>
-        <div>INITIALIZING PREBIT V17</div>
+        <div>INITIALIZING PREBIT V19</div>
     </div>
 
     <header>
@@ -422,10 +433,13 @@
         document.getElementById('loader').style.display = 'none';
     };
 
+    // --- ANIMATION WRAPPER FOR FLASH ---
     function updateHeroPriceSmooth(newPrice) {
         if (state.animPrice === 0) state.animPrice = newPrice;
+        
         state.priceAnim.update(newPrice);
         state.animPrice = newPrice;
+
         const priceEl = document.querySelector('.big-price');
         priceEl.classList.remove('flash');
         void priceEl.offsetWidth; 
@@ -612,7 +626,9 @@
         state.chartWS = new WebSocket(`wss://stream.binance.com:9443/ws/btcusdt@kline_${config.ws}`);
         state.chartWS.onmessage = e => {
             const k = JSON.parse(e.data).k, p = parseFloat(k.c); state.price = p;
+            
             updateHeroPriceSmooth(p);
+            
             if(state.price24hAgo) { 
                 const c = p - state.price24hAgo, pct = (c/state.price24hAgo)*100, s = c>=0?'+':''; 
                 document.getElementById('hero-change').innerText = `${s}${pct.toFixed(2)}% (${s}$${Math.abs(c).toLocaleString(undefined, {maximumFractionDigits:2})})`; 
@@ -629,7 +645,7 @@
     function updateHighLowUI() { document.getElementById('val-high').innerText = state.high24.toLocaleString(undefined,{maximumFractionDigits:0}); document.getElementById('val-low').innerText = state.low24.toLocaleString(undefined,{maximumFractionDigits:0}); }
     
     function startTimer() { setInterval(() => { const now = new Date(), ist = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"})), t = new Date(ist); t.setHours(22, 30, 0, 0); if(ist > t) t.setDate(t.getDate() + 1); const d = t - ist, h = Math.floor(d/36e5), m = Math.floor((d%36e5)/6e4), s = Math.floor((d%6e4)/1e3); document.getElementById('close-timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; }, 1000); }
-    async function fetchHistory() { const ul = document.getElementById('history-list'); try { const r = await fetch('https://min-api.cryptocompare.com/data/v2/histohour?fsym=BTC&tsym=USD&limit=360'); const j = await r.json(); ul.innerHTML = ''; j.Data.Data.reverse().filter(d => new Date(d.time*1000).getUTCHours()===16).slice(0,15).forEach(d => { const date = new Date(d.time*1000).toLocaleDateString('en-IN', {day:'numeric',month:'short',timeZone:'Asia/Kolkata'}), c = ((d.close-d.open)/d.open)*100, s = c>=0?'+':'', cl = c>=0?'pos':'neg'; ul.innerHTML += `<li class="hist-item"><div><div class="hist-date">${date}</div></div><div><span class="hist-price">$${d.close.toLocaleString()}</span><span class="hist-change ${cl}">${s}${c.toFixed(2)}%</span></div></li>`; }); } catch(e) { ul.innerHTML = '<li class="hist-item">History Load Failed</li>'; } }
+    async function fetchHistory() { const ul = document.getElementById('history-list'); try { const r = await fetch('https://min-api.cryptocompare.com/data/v2/histohour?fsym=BTC&tsym=USD&limit=360'); const j = await r.json(); ul.innerHTML = ''; j.Data.Data.reverse().filter(d => new Date(d.time*1000).getUTCHours()===16).slice(0,15).forEach(d => { const date = new Date(d.time*1000).toLocaleDateString('en-IN', {day:'numeric',month:'short',timeZone:'Asia/Kolkata'}), c = ((d.close-d.open)/d.open)*100, s = c>=0?'+':'', cl = c>=0?'pos':'neg'; ul.innerHTML += `<li class="hist-item"><div class="hist-left"><div class="hist-date">${date}</div></div><div class="hist-right"><span class="hist-price">$${d.close.toLocaleString()}</span><span class="hist-change ${cl}">${s}${c.toFixed(2)}%</span></div></li>`; }); } catch(e) { ul.innerHTML = '<li class="hist-item">History Load Failed</li>'; } }
     async function fetchNews() { const c = document.getElementById('news-container'); try { const r = await fetch('https://min-api.cryptocompare.com/data/v2/news/?lang=EN'); const j = await r.json(); c.innerHTML = ''; j.Data.slice(0, 8).forEach(n => { const d = document.createElement('div'); d.className = 'news-card'; d.innerHTML = `<div class="news-source">${n.source_info.name}</div><div class="news-title">${n.title}</div>`; d.onclick = () => { if(confirm(`Open article?`)) window.open(n.url, '_blank'); }; c.appendChild(d); }); } catch(e) {} }
 </script>
 </body>
